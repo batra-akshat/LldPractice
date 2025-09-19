@@ -11,19 +11,24 @@ public class LogService {
     }
 
     public synchronized void sendMessage(String content, LogLevel level) {
-        var sink = loggerConfiguration.levelConfigurations.stream().filter(levelConfiguration ->
-                levelConfiguration.getLevel().equals(level)).findFirst();
-        if(sink.isEmpty()) {
-            throw new IllegalArgumentException("No sink defined for this level of message");
-        }
-        var message = new Message(content, level, loggerConfiguration.getNamespace(), sink.get().getSink());
-        if(sink == null) {
-            throw new IllegalArgumentException("sink can't be null");
-        }
-        if(!message.getLevel().hasHigherOrEqualPriority(loggerConfiguration.getLogAboveOrEqualToLevel())) {
-            System.out.println("Doing nothing since priority is less");
+        // Check if we should log this level
+        if (!level.hasHigherOrEqualPriority(loggerConfiguration.getLogAboveOrEqualToLevel())) {
+            System.out.println("Skipping message - priority too low");
             return;
         }
+
+        // Find sink for this level
+        var levelConfig = loggerConfiguration.getLevelConfigurations().stream()
+                .filter(config -> config.getLevel().equals(level))
+                .findFirst();
+
+        if (levelConfig.isEmpty()) {
+            throw new IllegalArgumentException("No sink defined for level: " + level);
+        }
+
+        var message = new Message(content, level, loggerConfiguration.getNamespace(),
+                levelConfig.get().getSink());
+
         enrichMessages(message);
         sendMessageToSink(message);
     }

@@ -87,9 +87,25 @@ public class Message {
         this.namespace = namespace;
         this.sink = sink;
     }
+
+    // Better encapsulation - only allow setting once
     public void setTimeStamp(LocalDateTime time) {
         if(this.time == null) {
             this.time = time;
         }
+    }
+
+    // Add method to get formatted message
+    public String getFormattedContent() {
+        StringBuilder sb = new StringBuilder();
+        if (time != null) {
+            sb.append("[").append(time).append("] ");
+        }
+        sb.append("[").append(level).append("] ");
+        if (namespace != null && !namespace.isEmpty()) {
+            sb.append("[").append(namespace).append("] ");
+        }
+        sb.append(content);
+        return sb.toString();
     }
 }
