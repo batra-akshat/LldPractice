@@ -7,22 +7,24 @@ public class EntryService {
     private final ParkingLot parkingLot = ParkingLot.getInstance();
 
 
-    public Optional<ParkingSlot> findAvailableSlot(Entry entry) {
-        return parkingLot.getSlotAllotmentStrategy().getSlot(parkingLot, entry);
+    public Optional<ParkingSlot> findAvailableSlot(Entry entry, VehicleType vehicleType) {
+        return parkingLot.getSlotAllotmentStrategy().getSlot(parkingLot, entry, vehicleType);
     }
 
     public EntryTicket parkVehicle(Vehicle vehicle, Entry entry) {
-        Optional<ParkingSlot> availableSlot = findAvailableSlot(entry);
+        Optional<ParkingSlot> availableSlot = findAvailableSlot(entry, vehicle.getVehicleType());
 
         if (availableSlot.isEmpty()) {
             throw new IllegalArgumentException("No available slots");
         }
 
         ParkingSlot slot = availableSlot.get();
+        // these 2 should be done in a single transaction and should be thread safe
         slot.setVehicle(vehicle);
+        parkingLot.getSlots().remove(slot.getId());
 
         return EntryTicket.builder()
-                .slotId(slot.getId())
+                .slot(slot)
                 .entryId(entry.getEntryId())
                 .entryTimeInMillis(System.currentTimeMillis())
                 .vehicle(vehicle)

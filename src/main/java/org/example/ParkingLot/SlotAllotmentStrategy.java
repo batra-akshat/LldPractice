@@ -3,5 +3,5 @@ package org.example.ParkingLot;
 import java.util.Optional;
 
 public interface SlotAllotmentStrategy {
-    Optional<ParkingSlot> getSlot(ParkingLot parkingLot, Entry entry);
+    Optional<ParkingSlot> getSlot(ParkingLot parkingLot, Entry entry, VehicleType vehicleType);
 }

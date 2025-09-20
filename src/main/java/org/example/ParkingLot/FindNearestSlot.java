@@ -1,20 +1,19 @@
 package org.example.ParkingLot;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class FindNearestSlot implements SlotAllotmentStrategy {
 
     @Override
-    public Optional<ParkingSlot> getSlot(ParkingLot parkingLot, Entry entry) {
-        var availableSlots = parkingLot.getSlots().stream()
-                .filter(slot -> slot.getVehicle() == null)
-                .toList();
+    public Optional<ParkingSlot> getSlot(ParkingLot parkingLot, Entry entry,
+                                         VehicleType vehicleType) {
 
-        return findNearestSlotToEntry(availableSlots, entry);
+        return findNearestSlotToEntry(parkingLot.getSlots(), entry, vehicleType);
     }
 
-    private Optional<ParkingSlot> findNearestSlotToEntry(List<ParkingSlot> availableSlots, Entry entry) {
+    private Optional<ParkingSlot> findNearestSlotToEntry(Map<String, ParkingSlot> availableSlots, Entry entry,
+                                                         VehicleType vehicleType) {
         if (availableSlots.isEmpty()) {
             return Optional.empty();
         }
@@ -22,14 +21,15 @@ public class FindNearestSlot implements SlotAllotmentStrategy {
         ParkingSlot nearestSlot = null;
         int minDistance = Integer.MAX_VALUE;
 
-        for (ParkingSlot slot : availableSlots) {
-            int distance = calculateManhattanDistance(slot, entry);
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearestSlot = slot;
+        for (ParkingSlot slot : availableSlots.values()) {
+            if (slot.getVehicleType().equals(vehicleType)) {
+                int distance = calculateManhattanDistance(slot, entry);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestSlot = slot;
+                }
             }
         }
-
         return Optional.ofNullable(nearestSlot);
     }
 

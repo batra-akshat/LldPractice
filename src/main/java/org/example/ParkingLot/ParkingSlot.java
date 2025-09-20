@@ -12,4 +12,5 @@ public class ParkingSlot {
     private String id;
     private Integer xCord;
     private Integer yCord;
+    private VehicleType vehicleType;
 }

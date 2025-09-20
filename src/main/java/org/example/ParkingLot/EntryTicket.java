@@ -10,6 +10,6 @@ import lombok.Setter;
 public class EntryTicket {
     private Vehicle vehicle;
     private Long entryTimeInMillis;
-    private String slotId;
+    private ParkingSlot slot;
     private String entryId;
 }
