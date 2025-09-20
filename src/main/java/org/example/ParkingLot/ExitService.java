@@ -4,9 +4,11 @@ public class ExitService {
 
     private final ParkingLot parkingLot = ParkingLot.getInstance();
 
-    public void unParkVehicle(EntryTicket ticket) {
+    public synchronized void unParkVehicle(EntryTicket ticket) {
         var slot = ticket.getSlot();
-        parkingLot.getOccupiedSlots().remove(slot);
+        // all these 3 steps should be a transaction
+        parkingLot.getOccupiedSlots().remove(slot.getId());
+        slot.setVehicle(null);
         parkingLot.getAvailableSlots().put(ticket.getSlot().getId(), slot);
     }
 

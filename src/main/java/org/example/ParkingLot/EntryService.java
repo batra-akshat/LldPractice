@@ -22,7 +22,7 @@ public class EntryService {
         // these 3 should be done in a single transaction and should be thread safe
         slot.setVehicle(vehicle);
         parkingLot.getAvailableSlots().remove(slot.getId());
-        parkingLot.getOccupiedSlots().add(slot);
+        parkingLot.getOccupiedSlots().put(slot.getId(), slot);
         return EntryTicket.builder()
                 .slot(slot)
                 .entryId(entry.getEntryId())

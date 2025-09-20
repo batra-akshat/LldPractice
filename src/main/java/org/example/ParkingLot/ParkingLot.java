@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ParkingLot {
     private static ParkingLot parkingLot;
     private ConcurrentHashMap<String, ParkingSlot> availableSlots;
-    private final Set<ParkingSlot> occupiedSlots = ConcurrentHashMap.newKeySet();
+    private ConcurrentHashMap<String, ParkingSlot> occupiedSlots; // Use same structure
     private List<Entry> entries;
     private Integer capacity;
     private SlotAllotmentStrategy slotAllotmentStrategy;
@@ -26,6 +26,7 @@ public class ParkingLot {
     private ParkingLot(ParkingLotConfig config) {
         this.capacity = config.getCapacity();
         availableSlots = new ConcurrentHashMap<>();
+        occupiedSlots = new ConcurrentHashMap<>();
         for (int i = 0; i < capacity; i++) {
             var slotId = UUID.randomUUID().toString();
             var parkingSlot = ParkingSlot.builder()
