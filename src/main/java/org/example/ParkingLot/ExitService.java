@@ -21,4 +21,8 @@ public class ExitService {
         slot.setVehicle(null);
         parkingLot.getAvailableSlots().put(slotId, slot);
     }
+
+    public synchronized Invoice generateInvoice(EntryTicket ticket, PaymentMethod method) {
+        return parkingLot.getInvoiceCalculationStrategy().calculateInvoice(ticket, method);
+    }
 }

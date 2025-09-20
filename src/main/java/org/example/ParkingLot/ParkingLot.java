@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Setter
-@Builder
 public class ParkingLot {
     private static ParkingLot parkingLot;
     private ConcurrentHashMap<String, ParkingSlot> availableSlots;
