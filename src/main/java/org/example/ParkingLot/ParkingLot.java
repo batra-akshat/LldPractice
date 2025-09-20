@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Builder
 public class ParkingLot {
     private static ParkingLot parkingLot;
-    private ConcurrentHashMap<String, ParkingSlot> slots;
+    private ConcurrentHashMap<String, ParkingSlot> availableSlots;
+    private final Set<ParkingSlot> occupiedSlots = ConcurrentHashMap.newKeySet();
     private List<Entry> entries;
     private Integer capacity;
     private SlotAllotmentStrategy slotAllotmentStrategy;
@@ -23,7 +25,7 @@ public class ParkingLot {
 
     private ParkingLot(ParkingLotConfig config) {
         this.capacity = config.getCapacity();
-        slots = new ConcurrentHashMap<>();
+        availableSlots = new ConcurrentHashMap<>();
         for (int i = 0; i < capacity; i++) {
             var slotId = UUID.randomUUID().toString();
             var parkingSlot = ParkingSlot.builder()
@@ -32,7 +34,7 @@ public class ParkingLot {
                     .id(slotId)
                     .vehicleType(VehicleType.CAR) // can be inserted dynamically via config
                     .build();
-            slots.put(slotId, parkingSlot);
+            availableSlots.put(slotId, parkingSlot);
         }
         slotAllotmentStrategy = config.getSlotAllotmentStrategy();
         invoiceCalculationStrategy = config.getInvoiceCalculationStrategy();

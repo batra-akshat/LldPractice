@@ -9,7 +9,7 @@ public class FindNearestSlot implements SlotAllotmentStrategy {
     public Optional<ParkingSlot> getSlot(ParkingLot parkingLot, Entry entry,
                                          VehicleType vehicleType) {
 
-        return findNearestSlotToEntry(parkingLot.getSlots(), entry, vehicleType);
+        return findNearestSlotToEntry(parkingLot.getAvailableSlots(), entry, vehicleType);
     }
 
     private Optional<ParkingSlot> findNearestSlotToEntry(Map<String, ParkingSlot> availableSlots, Entry entry,

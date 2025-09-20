@@ -11,7 +11,7 @@ public class EntryService {
         return parkingLot.getSlotAllotmentStrategy().getSlot(parkingLot, entry, vehicleType);
     }
 
-    public EntryTicket parkVehicle(Vehicle vehicle, Entry entry) {
+    public synchronized EntryTicket parkVehicle(Vehicle vehicle, Entry entry) {
         Optional<ParkingSlot> availableSlot = findAvailableSlot(entry, vehicle.getVehicleType());
 
         if (availableSlot.isEmpty()) {
@@ -19,10 +19,10 @@ public class EntryService {
         }
 
         ParkingSlot slot = availableSlot.get();
-        // these 2 should be done in a single transaction and should be thread safe
+        // these 3 should be done in a single transaction and should be thread safe
         slot.setVehicle(vehicle);
-        parkingLot.getSlots().remove(slot.getId());
-
+        parkingLot.getAvailableSlots().remove(slot.getId());
+        parkingLot.getOccupiedSlots().add(slot);
         return EntryTicket.builder()
                 .slot(slot)
                 .entryId(entry.getEntryId())
