@@ -5,14 +5,20 @@ public class ExitService {
     private final ParkingLot parkingLot = ParkingLot.getInstance();
 
     public synchronized void unParkVehicle(EntryTicket ticket) {
-        var slot = ticket.getSlot();
-        // all these 3 steps should be a transaction
-        parkingLot.getOccupiedSlots().remove(slot.getId());
-        slot.setVehicle(null);
-        parkingLot.getAvailableSlots().put(ticket.getSlot().getId(), slot);
-    }
+        if (ticket == null || ticket.getSlot() == null) {
+            throw new IllegalArgumentException("Invalid ticket");
+        }
 
-    public Invoice generateInvoice(EntryTicket ticket, PaymentMethod method) {
-        return parkingLot.getInvoiceCalculationStrategy().calculateInvoice(ticket, method);
+        var slot = ticket.getSlot();
+        String slotId = slot.getId();
+
+        if (!parkingLot.getOccupiedSlots().containsKey(slotId)) {
+            throw new IllegalStateException("Slot not found in occupied slots");
+        }
+
+        // Atomic transaction
+        parkingLot.getOccupiedSlots().remove(slotId);
+        slot.setVehicle(null);
+        parkingLot.getAvailableSlots().put(slotId, slot);
     }
 }
