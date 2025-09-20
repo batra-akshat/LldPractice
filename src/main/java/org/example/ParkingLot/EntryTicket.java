@@ -11,4 +11,5 @@ public class EntryTicket {
     private Vehicle vehicle;
     private Long entryTimeInMillis;
     private String slotId;
+    private String entryId;
 }

@@ -7,9 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ParkingSlot {
-    private Vehicle vehicle;
-    private String id;
+public class Entry {
+    private String entryId;
     private Integer xCord;
     private Integer yCord;
 }

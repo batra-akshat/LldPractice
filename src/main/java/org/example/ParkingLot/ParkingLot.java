@@ -15,6 +15,7 @@ import java.util.UUID;
 public class ParkingLot {
     private static ParkingLot parkingLot;
     private List<ParkingSlot> slots;
+    private List<Entry> entries;
     private Integer capacity;
     private SlotAllotmentStrategy slotAllotmentStrategy;
     private InvoiceCalculationStrategy invoiceCalculationStrategy;
@@ -25,10 +26,19 @@ public class ParkingLot {
         for (int i = 0; i < capacity; i++) {
             slots.add(ParkingSlot.builder()
                     .id(UUID.randomUUID().toString())
+                            .xCord(i)
+                            .yCord(i)
                     .build());
         }
         slotAllotmentStrategy = config.getSlotAllotmentStrategy();
         invoiceCalculationStrategy = config.getInvoiceCalculationStrategy();
+        entries = new ArrayList<>();
+        for (int i = 0; i < config.getNumberOfEntries(); i++) {
+            entries.add(Entry.builder()
+                    .yCord(i)
+                    .xCord(i)
+                    .build());
+        }
     }
 
     public static synchronized ParkingLot getInstance(ParkingLotConfig config) {
@@ -41,7 +51,8 @@ public class ParkingLot {
     public static ParkingLot getInstance() {
         if (parkingLot == null) {
             // Use default config
-            return getInstance(new ParkingLotConfig(100, new FindNearestSlot(), new MinuteBasedInvoiceCalculation()));
+            return getInstance(new ParkingLotConfig(100, new FindNearestSlot(),
+                    new MinuteBasedInvoiceCalculation(), 2));
         }
         return parkingLot;
     }

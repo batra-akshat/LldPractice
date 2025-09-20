@@ -7,12 +7,12 @@ public class EntryService {
     private final ParkingLot parkingLot = ParkingLot.getInstance();
 
 
-    public Optional<ParkingSlot> findAvailableSlot() {
-        return parkingLot.getSlotAllotmentStrategy().getSlot(parkingLot);
+    public Optional<ParkingSlot> findAvailableSlot(Entry entry) {
+        return parkingLot.getSlotAllotmentStrategy().getSlot(parkingLot, entry);
     }
 
-    public EntryTicket parkVehicle(Vehicle vehicle) {
-        Optional<ParkingSlot> availableSlot = findAvailableSlot();
+    public EntryTicket parkVehicle(Vehicle vehicle, Entry entry) {
+        Optional<ParkingSlot> availableSlot = findAvailableSlot(entry);
 
         if (availableSlot.isEmpty()) {
             throw new IllegalArgumentException("No available slots");
@@ -23,6 +23,7 @@ public class EntryService {
 
         return EntryTicket.builder()
                 .slotId(slot.getId())
+                .entryId(entry.getEntryId())
                 .entryTimeInMillis(System.currentTimeMillis())
                 .vehicle(vehicle)
                 .build();
