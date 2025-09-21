@@ -1,6 +1,5 @@
 package org.example.carRental;
 
-import com.sun.source.tree.Tree;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Builder
 public class Branch {
     private String branchName;
-    ConcurrentHashMap<VehicleType, HashSet<Vehicle>> vehicleTypeToAvailableVehicles;
+    ConcurrentHashMap<VehicleType, HashSet<Vehicle>> vehicleTypeToVehicles;
     ConcurrentHashMap<VehicleType, Integer> vehicleTypeToPriceMap;
-    TreeSet<Booking> bookings;
+    HashMap<String, List<Booking>> vehicleIdToBookings;
 
 }

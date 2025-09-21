@@ -1,10 +1,8 @@
 package org.example.carRental;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class CheapestBookingStrategy implements BookingStrategy {
 
@@ -13,41 +11,38 @@ public class CheapestBookingStrategy implements BookingStrategy {
     @Override
     public synchronized Optional<Booking> bookVehicle(VehicleType vehicleType, long startTime, long endTime) {
         var branchNameToBranchHashMap = network.getBranchNameToBranchHashMap();
-        HashMap<String, HashSet<Vehicle>> branchToAvailableVehicles =
-                getBranchToAvailableVehicles(branchNameToBranchHashMap, vehicleType);
+        HashMap<String, Set<Vehicle>> branchToAvailableVehicles =
+                getBranchToAvailableVehicles(branchNameToBranchHashMap, vehicleType, startTime, endTime);
         var vehicle = getCheapestAvailableVehicle(branchToAvailableVehicles);
         // remove from available vehicles
         var branchOfVehicleOptional = network.getBranch(vehicle.getBranchName());
         if (branchOfVehicleOptional.isEmpty()) {
             throw new IllegalStateException("Branch can't be empty");
         }
-        try {
-            branchOfVehicleOptional.get().vehicleTypeToAvailableVehicles
-                    .get(vehicle.getVehicleType()).remove(vehicle);
-            var booking = Booking.builder()
-                    .vehicle(vehicle)
-                    .bookingId(UUID.randomUUID().toString())
-                    .startTimeInMillis(startTime)
-                    .endTimeInMillis(endTime)
-                    .build();
-            branchOfVehicleOptional.get().getBookings().add(booking);
-            return Optional.of(booking);
-        } catch (Exception e) {
-            // some rollback logic since above 2 steps should be a transaction.
-        }
-        // this means booking was not successful.
-        return Optional.empty();
+        var booking = Booking.builder()
+                .vehicle(vehicle)
+                .bookingId(UUID.randomUUID().toString())
+                .startTimeInMillis(startTime)
+                .endTimeInMillis(endTime)
+                .build();
+        branchOfVehicleOptional.get().getVehicleIdToBookings().putIfAbsent(vehicle.getVehicleId(), new ArrayList<>());
+        branchOfVehicleOptional.get().getVehicleIdToBookings().get(vehicle.getVehicleId()).add(booking);
+        return Optional.of(booking);
     }
 
-    private HashMap<String, HashSet<Vehicle>> getBranchToAvailableVehicles(ConcurrentHashMap<String, Branch> branchNameToBranchHashMap, VehicleType vehicleType) {
-        HashMap<String, HashSet<Vehicle>> vehicles = new HashMap<>();
+    private HashMap<String, Set<Vehicle>> getBranchToAvailableVehicles(ConcurrentHashMap<String, Branch> branchNameToBranchHashMap,
+                                                                       VehicleType vehicleType, long startTime, long endTime) {
+        HashMap<String, Set<Vehicle>> vehicles = new HashMap<>();
         for (var branch : branchNameToBranchHashMap.values()) {
-            vehicles.put(branch.getBranchName(), branch.vehicleTypeToAvailableVehicles.get(vehicleType));
+            vehicles.put(
+                    branch.getBranchName(), branch.vehicleTypeToVehicles.get(vehicleType)
+                            .stream().filter(vehicle -> isVehicleAvailable(vehicle, startTime, endTime))
+                            .collect(Collectors.toSet()));
         }
         return vehicles;
     }
 
-    private Vehicle getCheapestAvailableVehicle(HashMap<String, HashSet<Vehicle>> branchToAvailableVehicles) {
+    private Vehicle getCheapestAvailableVehicle(HashMap<String, Set<Vehicle>> branchToAvailableVehicles) {
         Vehicle vehicle = null;
         int price = Integer.MAX_VALUE;
         for (var entry : branchToAvailableVehicles.entrySet()) {
@@ -65,6 +60,24 @@ public class CheapestBookingStrategy implements BookingStrategy {
             }
         }
         return vehicle;
+    }
+
+    public boolean isVehicleAvailable(Vehicle vehicle, long startTime, long endTime) {
+
+        var branchOptional = network.getBranch(vehicle.getBranchName());
+        if (branchOptional.isEmpty()) {
+            throw new IllegalStateException("There can't be a vehicle whose branch is not present");
+        }
+        var branch = branchOptional.get();
+        // Check all bookings for this vehicle
+        for (Booking booking : branch.getVehicleIdToBookings().get(vehicle.getVehicleId())) {
+            // Check for time overlap
+            if (!(endTime <= booking.getStartTimeInMillis() ||
+                    startTime >= booking.getEndTimeInMillis())) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

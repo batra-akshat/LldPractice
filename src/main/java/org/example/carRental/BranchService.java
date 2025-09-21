@@ -13,8 +13,8 @@ public class BranchService {
         var branch = Branch.builder()
                 .branchName(branchName)
                 .vehicleTypeToPriceMap(new ConcurrentHashMap<>())
-                .vehicleTypeToAvailableVehicles(new ConcurrentHashMap<>())
-                .bookings(new TreeSet<>())
+                .vehicleTypeToVehicles(new ConcurrentHashMap<>())
+                .vehicleIdToBookings(new HashMap<>())
                 .build();
         network.addBranch(branch);
         return branch;

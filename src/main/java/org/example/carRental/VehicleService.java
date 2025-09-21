@@ -1,6 +1,6 @@
 package org.example.carRental;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class VehicleService {
     CarRentalNetwork network = CarRentalNetwork.getInstance();
@@ -16,7 +16,7 @@ public class VehicleService {
                 .branchName(branchName)
                 .vehicleType(vehicleType)
                 .build();
-        branchVal.vehicleTypeToAvailableVehicles.putIfAbsent(vehicleType, new ArrayList<>());
-        branchVal.vehicleTypeToAvailableVehicles.get(vehicleType).add(vehicle);
+        branchVal.vehicleTypeToVehicles.putIfAbsent(vehicleType, new HashSet<>());
+        branchVal.vehicleTypeToVehicles.get(vehicleType).add(vehicle);
     }
 }

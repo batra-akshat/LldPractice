@@ -23,7 +23,7 @@ public class CarRentalNetwork {
     }
 
     public Optional<Branch> getBranch(String branchName) {
-        if (!branchNameToBranchHashMap.contains(branchName)) {
+        if (!branchNameToBranchHashMap.containsKey(branchName)) {
             return Optional.empty();
         } else {
             return Optional.of(branchNameToBranchHashMap.get(branchName));
