@@ -14,7 +14,7 @@ public class BranchService {
                 .branchName(branchName)
                 .vehicleTypeToPriceMap(new ConcurrentHashMap<>())
                 .vehicleTypeToVehicles(new ConcurrentHashMap<>())
-                .vehicleIdToBookings(new HashMap<>())
+                .vehicleIdToBookings(new ConcurrentHashMap<>())
                 .build();
         network.addBranch(branch);
         return branch;

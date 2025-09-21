@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
 @Setter
@@ -14,6 +15,6 @@ public class Branch {
     private String branchName;
     ConcurrentHashMap<VehicleType, HashSet<Vehicle>> vehicleTypeToVehicles;
     ConcurrentHashMap<VehicleType, Integer> vehicleTypeToPriceMap;
-    HashMap<String, List<Booking>> vehicleIdToBookings;
+    ConcurrentHashMap<String, CopyOnWriteArrayList<Booking>> vehicleIdToBookings;
 
 }
