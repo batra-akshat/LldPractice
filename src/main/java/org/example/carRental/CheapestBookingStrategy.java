@@ -12,6 +12,13 @@ public class CheapestBookingStrategy implements BookingStrategy {
 
     @Override
     public synchronized Optional<Booking> bookVehicle(VehicleType vehicleType, long startTime, long endTime) {
+        // Add this validation
+        if (startTime >= endTime) {
+            throw new IllegalArgumentException("Start time must be before end time");
+        }
+        if (vehicleType == null) {
+            throw new IllegalArgumentException("Vehicle type cannot be null");
+        }
         var branchNameToBranchHashMap = network.getBranchNameToBranchHashMap();
         HashMap<String, Set<Vehicle>> branchToAvailableVehicles =
                 inventoryService.getBranchToAvailableVehicles(branchNameToBranchHashMap, vehicleType, startTime, endTime);

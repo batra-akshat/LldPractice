@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Builder
 public class Branch {
     private String branchName;
-    ConcurrentHashMap<VehicleType, HashSet<Vehicle>> vehicleTypeToVehicles;
+    ConcurrentHashMap<VehicleType, Set<Vehicle>> vehicleTypeToVehicles;
     ConcurrentHashMap<VehicleType, Integer> vehicleTypeToPriceMap;
     ConcurrentHashMap<String, CopyOnWriteArrayList<Booking>> vehicleIdToBookings;
 

@@ -13,14 +13,18 @@ public class InventoryService {
 
     public HashMap<String, Set<Vehicle>> getBranchToAvailableVehicles(ConcurrentHashMap<String, Branch> branchNameToBranchHashMap,
                                                                   VehicleType vehicleType, long startTime, long endTime) {
-        HashMap<String, Set<Vehicle>> vehicles = new HashMap<>();
+        HashMap<String, Set<Vehicle>> branchToAvailableVehicles = new HashMap<>();
         for (var branch : branchNameToBranchHashMap.values()) {
-            vehicles.put(
+            Set<Vehicle> vehicles = branch.vehicleTypeToVehicles.get(vehicleType);
+            if (vehicles == null || vehicles.isEmpty()) {
+                continue; // or return empty set
+            }
+            branchToAvailableVehicles.put(
                     branch.getBranchName(), branch.vehicleTypeToVehicles.get(vehicleType)
                             .stream().filter(vehicle -> isVehicleAvailable(vehicle, startTime, endTime))
                             .collect(Collectors.toSet()));
         }
-        return vehicles;
+        return branchToAvailableVehicles;
     }
 
 

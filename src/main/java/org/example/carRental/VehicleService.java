@@ -1,6 +1,7 @@
 package org.example.carRental;
 
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class VehicleService {
     CarRentalNetwork network = CarRentalNetwork.getInstance();
@@ -16,7 +17,10 @@ public class VehicleService {
                 .branchName(branchName)
                 .vehicleType(vehicleType)
                 .build();
-        branchVal.vehicleTypeToVehicles.putIfAbsent(vehicleType, new HashSet<>());
+        branchVal.vehicleTypeToVehicles.computeIfAbsent(
+                vehicleType,
+                k -> ConcurrentHashMap.newKeySet()
+        );
         branchVal.vehicleTypeToVehicles.get(vehicleType).add(vehicle);
     }
 }
