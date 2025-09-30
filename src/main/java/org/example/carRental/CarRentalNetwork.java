@@ -29,5 +29,4 @@ public class CarRentalNetwork {
             return Optional.of(branchNameToBranchHashMap.get(branchName));
         }
     }
-
 }
