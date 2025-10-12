@@ -29,15 +29,15 @@ public class NotificationServiceExample {
                         .channel(NotificationChannel.EMAIL)
                         .build()
         ));
-        NotificationChannelServiceFactory factory = NotificationChannelServiceFactory.getInstance();
-        factory.sendNotification(Notification.builder()
+        NotificationService service = NotificationService.getInstance();
+        service.sendNotification(Notification.builder()
                         .id("Notifcation1")
                         .content("This is a new friend request for user 1")
                         .heading("Friend request")
                         .type(NotificationType.FRIEND_REQUEST)
                 .build(), user1);
 
-        factory.sendNotification(Notification.builder()
+        service.sendNotification(Notification.builder()
                 .id("Notifcation2")
                 .content("This is a new friend request for user 2")
                 .heading("Friend request")
