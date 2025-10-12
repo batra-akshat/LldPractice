@@ -21,7 +21,7 @@ public class AssignmentService {
     public void processOrders() {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         for(int i=0;i<100;i++) {
-            CompletableFuture<Void> future = CompletableFuture.supplyAsync(assignDoctor(), executorService);
+            CompletableFuture<Void> future = CompletableFuture.runAsync(this::assignDoctor, executorService);
             futures.add(future);
         }
         // wait for all the tasks to complete
