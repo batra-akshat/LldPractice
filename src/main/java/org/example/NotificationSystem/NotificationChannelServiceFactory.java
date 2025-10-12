@@ -5,11 +5,17 @@ import lombok.Getter;
 import java.util.Map;
 
 public class NotificationChannelServiceFactory {
-    private final Map<NotificationChannel, NotificationChannelService> channelServices = Map.of(
-            NotificationChannel.EMAIL, new EmailNotificationChannelService(),
-            NotificationChannel.SMS, new SMSNotificationChannelService(),
-            NotificationChannel.PUSH_NOTIFICATION, new PushNotificationChannelService()
-    );
+    private final Map<NotificationChannel, NotificationChannelService> channelServices;
+
+    public NotificationChannelServiceFactory(EmailNotificationChannelService emailNotificationChannelService,
+                                              SMSNotificationChannelService smsNotificationChannelService,
+                                              PushNotificationChannelService pushNotificationChannelService) {
+        channelServices = Map.of(
+                NotificationChannel.EMAIL, emailNotificationChannelService,
+                NotificationChannel.SMS, smsNotificationChannelService,
+                NotificationChannel.PUSH_NOTIFICATION, pushNotificationChannelService
+        );
+    }
 
     public void sendNotification(Notification notification, User user) {
         var notificationType = notification.getType();

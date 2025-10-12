@@ -29,7 +29,7 @@ public class NotificationServiceExample {
                         .channel(NotificationChannel.EMAIL)
                         .build()
         ));
-        NotificationService service = NotificationService.getInstance();
+        NotificationChannelServiceFactory service = getFactory();
         service.sendNotification(Notification.builder()
                         .id("Notifcation1")
                         .content("This is a new friend request for user 1")
@@ -43,5 +43,13 @@ public class NotificationServiceExample {
                 .heading("Friend request")
                 .type(NotificationType.FRIEND_REQUEST)
                 .build(), user2);
+    }
+
+    private static NotificationChannelServiceFactory getFactory() {
+        EmailNotificationChannelService emailNotificationChannelService = new EmailNotificationChannelService();
+        PushNotificationChannelService pushNotificationChannelService = new PushNotificationChannelService();
+        SMSNotificationChannelService smsNotificationChannelService = new SMSNotificationChannelService();
+        return new NotificationChannelServiceFactory(emailNotificationChannelService,
+                smsNotificationChannelService, pushNotificationChannelService);
     }
 }
