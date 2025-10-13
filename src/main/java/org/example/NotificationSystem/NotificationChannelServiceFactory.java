@@ -6,8 +6,8 @@ public class NotificationChannelServiceFactory {
     private final Map<NotificationChannel, NotificationChannelService> channelServices;
 
     public NotificationChannelServiceFactory(EmailNotificationChannelService emailNotificationChannelService,
-                                              SMSNotificationChannelService smsNotificationChannelService,
-                                              PushNotificationChannelService pushNotificationChannelService) {
+                                             SMSNotificationChannelService smsNotificationChannelService,
+                                             PushNotificationChannelService pushNotificationChannelService) {
         channelServices = Map.of(
                 NotificationChannel.EMAIL, emailNotificationChannelService,
                 NotificationChannel.SMS, smsNotificationChannelService,
@@ -50,7 +50,9 @@ public class NotificationChannelServiceFactory {
         if (service == null) {
             throw new IllegalArgumentException("No service found for channel: " + channel);
         }
-
+        var enrichers = user.getUserPersonalisedEnrichers();
+        enrichers.forEach(notificationEnricher ->
+                notificationEnricher.enrichNotification(notification, user));
         service.sendNotification(notification, user);
     }
 }

@@ -12,4 +12,5 @@ public class Notification {
     private String content;
     private String heading;
     private NotificationType type;
+    private String userId;
 }

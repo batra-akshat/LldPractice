@@ -9,7 +9,6 @@ import java.util.Map;
 public class PushNotificationChannelService implements NotificationChannelService{
     @Override
     public void sendNotification(Notification notification, User user) {
-        // dummy implementation for interview.
         log.info(Markers.appendEntries(Map.of(
                 "User", user,
                 "Notification", notification,
