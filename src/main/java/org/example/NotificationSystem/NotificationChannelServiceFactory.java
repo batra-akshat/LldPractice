@@ -1,7 +1,5 @@
 package org.example.NotificationSystem;
 
-import lombok.Getter;
-
 import java.util.Map;
 
 public class NotificationChannelServiceFactory {
