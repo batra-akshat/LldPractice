@@ -21,15 +21,19 @@ public class HalfOpenState extends CircuitBreakerState {
 
     @Override
     void moveFromHalfOpenToClosedOrOpen(CircuitBreaker circuitBreaker, Callable runnable) {
-        queue.add(getRunnableResponse(runnable));
-        int cnt = 0;
-        while (!queue.isEmpty() && queue.peek().getStatusCode().equals("200")) {
-            cnt++;
-            queue.poll();
+        RunnableResponse response = getRunnableResponse(runnable);
+
+        // Single failure -> immediately go back to OPEN
+        if (response.getStatusCode().equals("500")) {
+            moveFromHalfOpenToOpen(circuitBreaker);
+            return;
         }
-        if (cnt < circuitBreaker.getNoOfHalfOpenCalls()) {
-            moveFromOpenToHalfOpen(circuitBreaker);
-        } else {
+
+        // Track successful calls
+        queue.add(response);
+
+        // After N successful calls -> go to CLOSED
+        if (queue.size() >= circuitBreaker.getNoOfHalfOpenCalls()) {
             moveFromHalfOpenToClosed(circuitBreaker);
         }
     }

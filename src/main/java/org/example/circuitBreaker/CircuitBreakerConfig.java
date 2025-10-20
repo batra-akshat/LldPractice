@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CircuitBreakerConfig {
-    private Integer failureThreshold;
     private Integer failureRate;
     private Long timeoutForOpenStateInMillis; // OPEN -> HALF_OPEN
     private Integer timeWindowForCountingFailureInSeconds;

@@ -11,7 +11,6 @@ import java.util.concurrent.Callable;
 @Setter
 @Builder
 public class CircuitBreaker {
-    private Integer failureThreshold;
     private Integer failureRate;
     private Long timeoutForOpenStateInMillis; // OPEN -> HALF_OPEN
     private Integer timeWindowForCountingFailureInSeconds;
@@ -22,7 +21,6 @@ public class CircuitBreaker {
 
     public CircuitBreaker(String serviceName, CircuitBreakerConfig config) {
         this.serviceName = serviceName;
-        this.failureThreshold = config.getFailureThreshold();
         this.failureRate = config.getFailureRate();
         this.timeoutForOpenStateInMillis = config.getTimeoutForOpenStateInMillis();
         this.noOfHalfOpenCalls = config.getNoOfHalfOpenCalls();

@@ -38,8 +38,8 @@ public class ClosedState extends CircuitBreakerState {
         } else {
             successCounter++;
         }
-        double successRate = (successCounter * 100 * 1.0) / (queue.size());
-        if ((int) successRate >= circuitBreaker.getFailureRate()) {
+        double failureRate = (failCounter * 100.0) / queue.size();
+        if (failureRate >= circuitBreaker.getFailureRate()) {
             circuitBreaker.setCircuitBreakerState(new OpenState());
         }
     }
