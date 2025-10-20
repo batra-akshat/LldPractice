@@ -2,19 +2,16 @@ package org.example.circuitBreaker;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Random;
 import java.util.concurrent.Callable;
 
 public class HalfOpenState extends CircuitBreakerState {
 
     Queue<RunnableResponse> queue;
-    private final Random random;
     int failCounter;
     int successCounter;
 
     public HalfOpenState() {
         queue = new LinkedList<>();
-        random = new Random();
         failCounter = 0;
         successCounter = 0;
     }

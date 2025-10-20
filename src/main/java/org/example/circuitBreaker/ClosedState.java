@@ -2,19 +2,16 @@ package org.example.circuitBreaker;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Random;
 import java.util.concurrent.Callable;
 
 public class ClosedState extends CircuitBreakerState {
 
     Queue<RunnableResponse> queue;
-    private final Random random;
     int failCounter;
     int successCounter;
 
     public ClosedState() {
         queue = new LinkedList<>();
-        random = new Random();
         failCounter = 0;
         successCounter = 0;
     }
@@ -45,9 +42,8 @@ public class ClosedState extends CircuitBreakerState {
     }
 
     /**
-     * Returns random success or failure response;
-     *
-     * @return
+     * Returns success or failure response;
+
      */
     private RunnableResponse getRunnableResponse(Callable callable) {
         String statusCode;
