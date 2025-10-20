@@ -3,6 +3,7 @@ package org.example.circuitBreaker;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 public class ClosedState extends CircuitBreakerState {
 
@@ -19,7 +20,7 @@ public class ClosedState extends CircuitBreakerState {
     }
 
     @Override
-    void openCircuit(CircuitBreaker circuitBreaker, Runnable runnable) {
+    void openCircuit(CircuitBreaker circuitBreaker, Callable callable) {
         // implement this
         while (!queue.isEmpty() && (System.currentTimeMillis() -
                 queue.peek().getTimeStamp()) / 1000 > circuitBreaker.getTimeWindowForCountingFailureInSeconds()) {
@@ -30,15 +31,15 @@ public class ClosedState extends CircuitBreakerState {
             }
             queue.poll();
         }
-        var runnableResponse = getRunnableResponse(runnable);
+        var runnableResponse = getRunnableResponse(callable);
         queue.add(runnableResponse);
         if (runnableResponse.getStatusCode().equals("500")) {
             failCounter++;
         } else {
             successCounter++;
         }
-        var successRate = successCounter / (queue.size());
-        if (successRate >= circuitBreaker.getFailureRate()) {
+        double successRate = (successCounter * 100 * 1.0) / (queue.size());
+        if ((int) successRate >= circuitBreaker.getFailureRate()) {
             circuitBreaker.setCircuitBreakerState(new OpenState());
         }
     }
@@ -48,12 +49,18 @@ public class ClosedState extends CircuitBreakerState {
      *
      * @return
      */
-    private RunnableResponse getRunnableResponse(Runnable runnable) {
-        final String[] STATUS_CODES = {"200", "500"};
-        String randomStatusCode = STATUS_CODES[random.nextInt(STATUS_CODES.length)];
-        Long currentTimeStamp = (System.currentTimeMillis());
+    private RunnableResponse getRunnableResponse(Callable callable) {
+        String statusCode;
+        try {
+            callable.call();
+            statusCode = "200";
+        } catch (Exception e) {
+            statusCode = "500";
+        }
+
+        Long currentTimeStamp = System.currentTimeMillis();
         return RunnableResponse.builder()
-                .statusCode(randomStatusCode)
+                .statusCode(statusCode)
                 .timeStamp(currentTimeStamp)
                 .build();
     }

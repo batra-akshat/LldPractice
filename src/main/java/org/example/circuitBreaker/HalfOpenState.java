@@ -3,6 +3,7 @@ package org.example.circuitBreaker;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 public class HalfOpenState extends CircuitBreakerState {
 
@@ -19,7 +20,7 @@ public class HalfOpenState extends CircuitBreakerState {
     }
 
     @Override
-    void moveFromHalfOpenToClosedOrOpen(CircuitBreaker circuitBreaker, Runnable runnable) {
+    void moveFromHalfOpenToClosedOrOpen(CircuitBreaker circuitBreaker, Callable runnable) {
         queue.add(getRunnableResponse(runnable));
         int cnt = 0;
         while (!queue.isEmpty() && queue.peek().getStatusCode().equals("200")) {
@@ -43,12 +44,18 @@ public class HalfOpenState extends CircuitBreakerState {
         circuitBreaker.setCircuitBreakerState(new OpenState());
     }
 
-    private RunnableResponse getRunnableResponse(Runnable runnable) {
-        final String[] STATUS_CODES = {"200", "500"};
-        String randomStatusCode = STATUS_CODES[random.nextInt(STATUS_CODES.length)];
-        Long currentTimeStamp = (System.currentTimeMillis());
+    private RunnableResponse getRunnableResponse(Callable callable) {
+        String statusCode;
+        try {
+            callable.call();
+            statusCode = "200";
+        } catch (Exception e) {
+            statusCode = "500";
+        }
+
+        Long currentTimeStamp = System.currentTimeMillis();
         return RunnableResponse.builder()
-                .statusCode(randomStatusCode)
+                .statusCode(statusCode)
                 .timeStamp(currentTimeStamp)
                 .build();
     }

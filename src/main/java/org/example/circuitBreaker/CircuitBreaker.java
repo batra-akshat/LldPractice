@@ -4,7 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Queue;
+import java.util.concurrent.Callable;
+
 
 @Getter
 @Setter
@@ -29,23 +30,22 @@ public class CircuitBreaker {
         circuitBreakerState = new ClosedState();
     }
 
-    CircuitBreakerResponse<String> execute(Runnable runnable) {
+    CircuitBreakerResponse<String> execute(Callable callable) {
         String response = "success";
-        var circuitBreakerStateName = getCircuitBreakerState().getClass().getName();
-        if (circuitBreakerStateName.equals("ClosedState")) {
-            circuitBreakerState.openCircuit(this, runnable);
+        if (circuitBreakerState instanceof ClosedState) {
+            circuitBreakerState.openCircuit(this, callable);
             lastRequestServed = System.currentTimeMillis();
-        } else if (circuitBreakerStateName.equals("OpenState")) {
+        } else if (circuitBreakerState instanceof OpenState) {
             circuitBreakerState.moveFromOpenToHalfOpen(this);
             response = "short circuit";
         } else {
             lastRequestServed = System.currentTimeMillis();
-            circuitBreakerState.moveFromHalfOpenToClosedOrOpen(this, runnable);
+            circuitBreakerState.moveFromHalfOpenToClosedOrOpen(this, callable);
             response = "May not or may proceed";
         }
         return CircuitBreakerResponse.<String>builder()
                 .isAllowed(true)
-                .circuitBreakerState(circuitBreakerStateName)
+                .circuitBreakerState(circuitBreakerState.getClass().getName())
                 .apiResponse(response)
                 .build();
     }
