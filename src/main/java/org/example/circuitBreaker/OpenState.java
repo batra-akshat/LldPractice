@@ -9,4 +9,9 @@ public class OpenState extends CircuitBreakerState {
             circuitBreaker.setCircuitBreakerState(new HalfOpenState());
         }
     }
+
+    @Override
+    CircuitState getState() {
+        return CircuitState.OPEN;
+    }
 }

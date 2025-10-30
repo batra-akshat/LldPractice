@@ -16,4 +16,5 @@ public abstract class CircuitBreakerState {
         System.out.println("OOPS!! Something went wrong");
     }
 
+    abstract CircuitState getState();
 }

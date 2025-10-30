@@ -41,6 +41,11 @@ public class ClosedState extends CircuitBreakerState {
         }
     }
 
+    @Override
+    CircuitState getState() {
+        return CircuitState.CLOSED;
+    }
+
     /**
      * Returns success or failure response;
 

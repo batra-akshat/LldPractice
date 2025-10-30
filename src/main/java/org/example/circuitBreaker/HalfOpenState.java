@@ -35,6 +35,11 @@ public class HalfOpenState extends CircuitBreakerState {
         }
     }
 
+    @Override
+    CircuitState getState() {
+        return CircuitState.OPEN;
+    }
+
     void moveFromHalfOpenToClosed(CircuitBreaker circuitBreaker) {
         //
         circuitBreaker.setCircuitBreakerState(new ClosedState());
