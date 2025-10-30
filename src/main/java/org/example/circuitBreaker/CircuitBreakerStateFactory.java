@@ -5,16 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 public class CircuitBreakerStateFactory {
-    Map<CircuitState, CircuitBreakerState> circuitBreakerStateMap;
+    private final Map<CircuitState, CircuitBreakerState> circuitBreakerStateMap;
 
-    CircuitBreakerStateFactory(List<CircuitBreakerState> circuitBreakerStateList) {
+    public CircuitBreakerStateFactory() {
         circuitBreakerStateMap = new HashMap<>();
-        for (var circuitBreakerState : circuitBreakerStateList) {
-            circuitBreakerStateMap.putIfAbsent(circuitBreakerState.getState(), circuitBreakerState);
-        }
+        // Initialize all state instances
+        circuitBreakerStateMap.put(CircuitState.CLOSED, new ClosedState());
+        circuitBreakerStateMap.put(CircuitState.OPEN, new OpenState());
+        circuitBreakerStateMap.put(CircuitState.HALF_OPEN, new HalfOpenState());
     }
 
     public CircuitBreakerState getCircuitBreakerStateManager(CircuitState state) {
         return circuitBreakerStateMap.get(state);
     }
 }
+

@@ -67,6 +67,8 @@ public class CircuitBreaker {
     private CircuitBreakerState circuitBreakerState;
     private String serviceName;
     private Long lastRequestServed;
+    private CircuitBreakerStateFactory stateFactory;
+
 
     public CircuitBreaker(String serviceName, CircuitBreakerConfig config) {
         this.serviceName = serviceName;
@@ -104,8 +106,11 @@ public class CircuitBreaker {
                 .apiResponse(response)
                 .build();
     }
-
     synchronized void reset() {
-        circuitBreakerState = new ClosedState();
+        circuitBreakerState = stateFactory.getCircuitBreakerStateManager(CircuitState.CLOSED);
+    }
+
+    void transitionToState(CircuitState newState) {
+        this.circuitBreakerState = stateFactory.getCircuitBreakerStateManager(newState);
     }
 }

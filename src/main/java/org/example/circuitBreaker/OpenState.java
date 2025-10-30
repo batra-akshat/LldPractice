@@ -6,7 +6,7 @@ public class OpenState extends CircuitBreakerState {
         long currentTime = System.currentTimeMillis();
         long timeDiff = circuitBreaker.getLastRequestServed();
         if (currentTime - timeDiff >= circuitBreaker.getTimeoutForOpenStateInMillis()) {
-            circuitBreaker.setCircuitBreakerState(new HalfOpenState());
+            circuitBreaker.transitionToState(CircuitState.HALF_OPEN);
         }
     }
 

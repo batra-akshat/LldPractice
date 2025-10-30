@@ -41,13 +41,20 @@ public class HalfOpenState extends CircuitBreakerState {
     }
 
     void moveFromHalfOpenToClosed(CircuitBreaker circuitBreaker) {
-        //
-        circuitBreaker.setCircuitBreakerState(new ClosedState());
+        circuitBreaker.transitionToState(CircuitState.CLOSED);
+        // Reset the queue for clean state
+        queue.clear();
+        failCounter = 0;
+        successCounter = 0;
     }
 
     void moveFromHalfOpenToOpen(CircuitBreaker circuitBreaker) {
-        //
-        circuitBreaker.setCircuitBreakerState(new OpenState());
+        // Transition to OPEN state using factory
+        circuitBreaker.transitionToState(CircuitState.OPEN);
+        // Reset the queue for clean state
+        queue.clear();
+        failCounter = 0;
+        successCounter = 0;
     }
 
     private RunnableResponse getRunnableResponse(Callable callable) {
