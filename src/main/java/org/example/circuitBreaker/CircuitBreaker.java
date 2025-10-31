@@ -57,17 +57,15 @@ import java.util.concurrent.Callable;
  * Test Scenarios: Describe key test cases
  */
 @Getter
-@Setter
-@Builder
 public class CircuitBreaker {
-    private Integer failureRate;
-    private Long timeoutForOpenStateInMillis; // OPEN -> HALF_OPEN
-    private Integer timeWindowForCountingFailureInSeconds;
-    private Integer noOfHalfOpenCalls;
+    private final Integer failureRate;
+    private final Long timeoutForOpenStateInMillis; // OPEN -> HALF_OPEN
+    private final Integer timeWindowForCountingFailureInSeconds;
+    private final Integer noOfHalfOpenCalls;
     private CircuitBreakerState circuitBreakerState;
-    private String serviceName;
+    private final String serviceName;
     private Long lastRequestServed;
-    private CircuitBreakerStateFactory stateFactory;
+    private final CircuitBreakerStateFactory stateFactory;
 
 
     public CircuitBreaker(String serviceName, CircuitBreakerConfig config) {
@@ -76,7 +74,8 @@ public class CircuitBreaker {
         this.timeoutForOpenStateInMillis = config.getTimeoutForOpenStateInMillis();
         this.noOfHalfOpenCalls = config.getNoOfHalfOpenCalls();
         this.timeWindowForCountingFailureInSeconds = config.getTimeWindowForCountingFailureInSeconds();
-        circuitBreakerState = new ClosedState();
+        this.circuitBreakerState = new ClosedState();
+        this.stateFactory = new CircuitBreakerStateFactory();
     }
 
     synchronized CircuitBreakerResponse<String> execute(Callable callable) {
